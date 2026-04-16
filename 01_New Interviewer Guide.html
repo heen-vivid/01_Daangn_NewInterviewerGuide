@@ -119,8 +119,9 @@
     }
     .qa-item.open .qa-answer { max-height: 1000px; }
     .qa-answer-inner {
-      padding: 0 16px 16px 48px;
-      font-size: 0.9rem; line-height: 1.7; color: #374151;
+      padding: 4px 16px 16px 16px;
+      font-size: 0.9rem; line-height: 2.0; color: #374151;
+      letter-spacing: -0.01em;
     }
     .qa-answer-inner a { color: var(--primary); text-decoration: underline; }
     .qa-answer-inner code {
@@ -165,6 +166,46 @@
     .case-has a { color: #2563eb; }
     .case-no {
       background: #fef3c7; border-left: 3px solid #f59e0b; color: #92400e;
+    }
+
+    /* ─── Mobile responsive ─── */
+    @media (max-width: 640px) {
+      body { padding: 24px 12px 60px; }
+
+      header { margin-bottom: 24px; }
+      header h1 { font-size: 1.3rem; }
+      header p { font-size: 0.85rem; }
+
+      .pipeline {
+        gap: 4px; margin-bottom: 28px;
+        justify-content: flex-start;
+      }
+      .pipe-node { padding: 5px 10px; font-size: 0.7rem; }
+      .pipe-arrow { width: 16px; font-size: 0.7rem; }
+
+      .section-header { padding: 16px 16px; gap: 10px; }
+      .section-icon { width: 32px; height: 32px; font-size: 1rem; }
+      .section-title { font-size: 0.95rem; }
+      .section-inner { padding: 0 16px 16px; }
+
+      .qa-question { padding: 12px 12px; gap: 8px; }
+      .qa-q-icon { width: 20px; height: 20px; font-size: 0.7rem; }
+      .qa-q-text { font-size: 0.85rem; }
+
+      .qa-answer-inner { padding: 4px 12px 14px 12px; font-size: 0.84rem; }
+
+      .steps-list li { padding: 8px 10px; font-size: 0.8rem; }
+      .case-block { padding: 8px 12px; font-size: 0.8rem; }
+    }
+
+    @media (max-width: 380px) {
+      header h1 { font-size: 1.15rem; }
+
+      .pipeline { justify-content: center; }
+      .pipe-node { padding: 4px 8px; font-size: 0.65rem; }
+      .pipe-arrow { width: 12px; font-size: 0.6rem; }
+
+      .qa-answer-inner { padding: 4px 10px 12px 10px; }
     }
   </style>
 </head>
