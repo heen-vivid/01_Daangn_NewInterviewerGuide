@@ -250,7 +250,7 @@ const SECTIONS = [
         a: `<a href="https://docs.google.com/spreadsheets/d/1FT2MijSopb_DE1KQ1g6YfzAmn5QzEtgQn0xTDKnYrp4/edit?usp=sharing" target="_blank">신규 인터뷰어 교육 수강자 명단</a>에서 수강 완료 여부를 확인할 수 있어요. (자동 업데이트)
             <ul class="steps-list">
               <li><span class="step-num">1</span><div>수강 완료 확인 → 그린하우스 계정이 있는지 확인해요
-                <div class="case-block case-has"><b>계정이 있는 경우</b> : 아래 <b>'효자화 파일에 어떤 정보를 입력해야 하나요?'</b> 항목으로 넘어가요</div>
+                <div class="case-block case-has"><b>계정이 있는 경우</b> : <a href="#" onclick="openSection(1,0,2);return false;">등록 안내 → 1번 질문 → Step 3</a> 으로 넘어가요</div>
                 <div class="case-block case-no"><b>계정이 없는 경우</b> : 문의 받은 채널에서 '신규 인터뷰어 안내' 워크플로를 실행해요</div></div></li>
               <li><span class="step-num">2</span>미수강 → 문의 받은 채널에서 '신규 인터뷰어 안내' 워크플로를 실행해요</li>
             </ul>`
@@ -396,6 +396,32 @@ function updatePipeline() {
     const idx = parseInt(node.dataset.section);
     node.classList.toggle("active", openIdx.includes(idx));
   });
+}
+
+// 특정 섹션 > 질문 > 스텝으로 이동
+function openSection(sectionIdx, itemIdx, stepIdx) {
+  // 섹션 열기
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("open"));
+  const section = document.querySelector(`.section[data-section="${sectionIdx}"]`);
+  if (!section) return;
+  section.classList.add("open");
+  updatePipeline();
+
+  // 질문 열기
+  const items = section.querySelectorAll(".qa-item");
+  if (items[itemIdx]) {
+    items[itemIdx].classList.add("open");
+
+    // 스텝으로 스크롤
+    setTimeout(() => {
+      const steps = items[itemIdx].querySelectorAll(".steps-list li");
+      const target = steps[stepIdx] || items[itemIdx];
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.style.outline = "2px solid var(--primary)";
+      target.style.borderRadius = "8px";
+      setTimeout(() => { target.style.outline = ""; }, 2000);
+    }, 350);
+  }
 }
 
 renderSections();
