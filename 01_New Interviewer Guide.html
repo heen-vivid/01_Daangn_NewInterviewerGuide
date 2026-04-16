@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>신규 인터뷰어 참관 Q&A</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f6fa;
+      --card: #ffffff;
+      --primary: #4f6ef7;
+      --primary-hover: #3a57e8;
+      --text: #1a1d2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --tag-bg: #eef0fe;
+      --tag-color: #4f6ef7;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(79, 110, 247, 0.08);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; padding: 40px 16px 80px;
+    }
+
+    .container { max-width: 680px; margin: 0 auto; }
+
+    /* ─── Header ─── */
+    header { text-align: center; margin-bottom: 36px; }
+    header h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.02em; }
+    header p  { color: var(--muted); margin-top: 6px; font-size: 0.93rem; }
+
+    /* ─── Pipeline ─── */
+    .pipeline {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 40px; flex-wrap: wrap;
+    }
+    .pipe-step { display: flex; align-items: center; }
+    .pipe-node {
+      padding: 6px 14px; border-radius: 99px; font-size: 0.78rem; font-weight: 600;
+      background: var(--border); color: var(--muted); white-space: nowrap;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .pipe-node:hover { background: var(--tag-bg); color: var(--tag-color); }
+    .pipe-node.active { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(79,110,247,0.25); }
+    .pipe-arrow { width: 24px; text-align: center; color: var(--border); font-size: 0.8rem; flex-shrink: 0; }
+
+    /* ─── Section block ─── */
+    .section {
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 20px 24px; cursor: pointer; user-select: none;
+      transition: background 0.15s;
+    }
+    .section-header:hover { background: #fafbff; }
+    .section-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; flex-shrink: 0;
+    }
+    .section-icon.purple { background: #ede9fe; }
+    .section-icon.blue   { background: #dbeafe; }
+    .section-icon.green  { background: #d1fae5; }
+    .section-icon.orange { background: #ffedd5; }
+    .section-title { font-size: 1.05rem; font-weight: 700; flex: 1; }
+    .section-count {
+      font-size: 0.75rem; color: var(--muted); background: var(--bg);
+      padding: 2px 8px; border-radius: 99px;
+    }
+    .section-chevron {
+      font-size: 0.8rem; color: var(--muted); transition: transform 0.25s ease;
+    }
+    .section.open .section-chevron { transform: rotate(180deg); }
+
+    .section-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+    .section.open .section-body { max-height: 2000px; }
+    .section-inner { padding: 0 24px 20px; }
+
+    /* ─── Q&A item ─── */
+    .qa-item {
+      border: 1.5px solid var(--border); border-radius: 10px;
+      margin-bottom: 10px; overflow: hidden; transition: border-color 0.2s;
+    }
+    .qa-item:last-child { margin-bottom: 0; }
+    .qa-item.open { border-color: var(--primary); }
+
+    .qa-question {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px; cursor: pointer; user-select: none;
+      background: #fff; transition: background 0.15s;
+    }
+    .qa-question:hover { background: #f8f9ff; }
+    .qa-q-icon {
+      font-size: 0.78rem; font-weight: 700; color: var(--primary);
+      background: var(--tag-bg); width: 22px; height: 22px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .qa-q-text { font-size: 0.93rem; font-weight: 600; flex: 1; line-height: 1.5; }
+    .qa-chevron {
+      font-size: 0.75rem; color: var(--muted); transition: transform 0.2s ease;
+      flex-shrink: 0;
+    }
+    .qa-item.open .qa-chevron { transform: rotate(180deg); }
+
+    .qa-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+    .qa-item.open .qa-answer { max-height: 1000px; }
+    .qa-answer-inner {
+      padding: 0 16px 16px 48px;
+      font-size: 0.9rem; line-height: 1.7; color: #374151;
+    }
+    .qa-answer-inner a { color: var(--primary); text-decoration: underline; }
+    .qa-answer-inner code {
+      background: var(--tag-bg); color: var(--tag-color);
+      padding: 1px 6px; border-radius: 4px; font-size: 0.85em;
+    }
+
+    /* Answer badge (Yes/No) */
+    .badge {
+      display: inline-block; font-size: 0.75rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 99px; margin-right: 6px;
+      vertical-align: middle;
+    }
+    .badge-yes { background: #d1fae5; color: #059669; }
+    .badge-no  { background: #fee2e2; color: #dc2626; }
+
+    /* Steps list inside answer */
+    .steps-list { margin-top: 10px; padding: 0; list-style: none; }
+    .steps-list li {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: #f9fafb; border-radius: 8px; padding: 10px 12px;
+      margin-bottom: 6px; font-size: 0.85rem; line-height: 1.5;
+    }
+    .steps-list li:last-child { margin-bottom: 0; }
+    .step-num {
+      background: var(--primary); color: #fff; font-size: 0.68rem; font-weight: 700;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .steps-list a { color: var(--primary); text-decoration: underline; }
+
+    /* Case blocks (있는 경우 / 없는 경우) */
+    .case-block {
+      border-radius: 8px; padding: 10px 14px; margin-top: 8px;
+      font-size: 0.84rem; line-height: 1.6;
+    }
+    .case-block b { font-weight: 700; }
+    .case-has {
+      background: #eff6ff; border-left: 3px solid #3b82f6; color: #1e40af;
+    }
+    .case-has a { color: #2563eb; }
+    .case-no {
+      background: #fef3c7; border-left: 3px solid #f59e0b; color: #92400e;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>신규 인터뷰어 참관 Q&amp;A</h1>
+    <p>신규 인터뷰어 등록 문의를 받았어요. 어떻게 해야하나요?</p>
+  </header>
+
+  <div class="pipeline" id="pipeline">
+    <span class="pipe-step"><span class="pipe-node" data-section="0">자격 확인</span><span class="pipe-arrow">→</span></span>
+    <span class="pipe-step"><span class="pipe-node" data-section="1">등록 안내</span><span class="pipe-arrow">→</span></span>
+    <span class="pipe-step"><span class="pipe-node" data-section="2">교육 수강</span><span class="pipe-arrow">→</span></span>
+    <span class="pipe-step"><span class="pipe-node" data-section="3">참관 3회</span></span>
+  </div>
+
+  <div id="sections"></div>
+</div>
+
+<script>
+// ============================================================
+//  Q&A 데이터 — 이 부분만 수정하면 내용이 바뀝니다
+// ============================================================
+const SECTIONS = [
+  {
+    icon: "✅", iconColor: "purple",
+    title: "자격 확인",
+    items: [
+      {
+        q: "수습 3개월이 지났나요?",
+        a: `<span class="badge badge-yes">필수</span> 정규직 3개월 이상 재직 (수습 통과) 이 확인되어야 신규 인터뷰어 등록이 가능해요.
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>수습 통과 여부를 확인해요</li>
+              <li><span class="step-num">2</span>충족 시 → 신규 인터뷰어로 등록할 수 있어요</li>
+              <li><span class="step-num">3</span>미충족 시 → 수습 통과 예정 시점을 확인하고, 인터뷰 진행 시점과 교육 수강 예정일 등을 확인 후 등록 가능 여부를 안내드려요</li>
+            </ul>`
+      },
+      {
+        q: "교육 수강이 완료되었나요?",
+        a: `<a href="https://docs.google.com/spreadsheets/d/1FT2MijSopb_DE1KQ1g6YfzAmn5QzEtgQn0xTDKnYrp4/edit?usp=sharing" target="_blank">신규 인터뷰어 교육 수강자 명단</a>에서 수강 완료 여부를 확인할 수 있어요. (자동 업데이트)
+            <ul class="steps-list">
+              <li><span class="step-num">1</span><div>수강 완료 확인 → 그린하우스 계정이 있는지 확인해요
+                <div class="case-block case-has"><b>계정이 있는 경우</b> : 아래 <b>'효자화 파일에 어떤 정보를 입력해야 하나요?'</b> 항목으로 넘어가요</div>
+                <div class="case-block case-no"><b>계정이 없는 경우</b> : 문의 받은 채널에서 '신규 인터뷰어 안내' 워크플로를 실행해요</div></div></li>
+              <li><span class="step-num">2</span>미수강 → 문의 받은 채널에서 '신규 인터뷰어 안내' 워크플로를 실행해요</li>
+            </ul>`
+      },
+    ],
+  },
+  {
+    icon: "📋", iconColor: "blue",
+    title: "등록 안내",
+    items: [
+      {
+        q: "신규 인터뷰어 등록 절차는 어떻게 되나요?",
+        a: `<ul class="steps-list">
+              <li><span class="step-num">1</span>신청한 채널 상단에서 '신규 인터뷰어 안내' 워크플로우를 실행하고, 신청자를 선택해요.</li>
+              <li><span class="step-num">2</span><div>교육 수강 후 인터뷰어가 그린하우스 계정을 생성하고 핑하면 그린하우스 권한을 부여해요.
+                <div class="case-block case-has"><b>방법</b> : 그린하우스 Configure → User → 인터뷰어 검색 → Linked candidate → 인터뷰어 그린하우스 검색 후 Linked → Save User details</div>
+                <div class="case-block case-no"><b>왜 필요한가요?</b> 인터뷰어가 본인의 지원자 시절 그린하우스 프로필을 보지 못하게 하기 위함이에요.</div></div></li>
+              <li><span class="step-num">3</span><div>해당되는 포지션의 참관 인터뷰어로 등록해요.
+                <div class="case-block case-has"><b>방법</b> : 그린하우스 Job Setup → Hiring Team → 인터뷰어 검색 → 권한 설정</div></div></li>
+            </ul>`
+      },
+    ],
+  },
+  {
+    icon: "📖", iconColor: "green",
+    title: "교육 수강",
+    items: [
+      {
+        q: "인턴 포지션도 교육 수강이 필요한가요?",
+        a: `<span class="badge badge-yes">Yes</span> 네, 인턴 포지션도 교육 수강은 <b>필수</b>예요.
+            <br>전형이나 포지션과 관계없이 모든 신규 인터뷰어는 교육을 이수해야 참관을 시작할 수 있어요.`
+      },
+      {
+        q: "교육 수강 완료는 어디서 확인하나요?",
+        a: `<a href="https://docs.google.com/spreadsheets/d/1FT2MijSopb_DE1KQ1g6YfzAmn5QzEtgQn0xTDKnYrp4/edit?usp=sharing" target="_blank">신규 인터뷰어 교육 수강자 명단</a> 시트에서 확인할 수 있어요. 수강이 완료되면 효자화 파일에 자동으로 반영돼요.
+            <div class="case-block case-no"><b>참고</b> : 2026년 3월 이전에 교육을 수강한 경우 수강완료 표시가 되어있지 않을 수도 있어서 확인이 필요해요.</div>`
+      },
+      {
+        q: "교육 수강 후 다음 단계는 무엇인가요?",
+        a: `교육 수강이 완료되면 참관 프로세스에 진입해요.
+            <ul class="steps-list">
+              <li><span class="step-num">1</span>교육 수강 완료를 확인해요 (자동 업데이트)</li>
+              <li><span class="step-num">2</span><a href="https://docs.google.com/spreadsheets/d/1l-DAa5QQDQtO562Xl7EmqT4KtY35zqlL8et2tjVJxsE/edit?usp=sharing" target="_blank">효자화 파일</a> → '신규 인터뷰어 참관 현황' 시트 → <b>A~D열</b>을 수기로 입력해요</li>
+              <li><span class="step-num">3</span>참관 3회를 진행해요</li>
+            </ul>`
+      },
+    ],
+  },
+  {
+    icon: "👀", iconColor: "orange",
+    title: "참관",
+    items: [
+      {
+        q: "인턴 포지션도 참관이 필요한가요?",
+        a: `<span class="badge badge-no">No</span> 아니요, 인턴 포지션은 참관이 <b>필요하지 않아요.</b>
+            <div class="case-block case-has">다만, 인터뷰 진행 경험이 없을 경우, 정식 인터뷰어와 함께 인터뷰에 배정해드리는 것을 추천해요.</div>`
+      },
+      {
+        q: "참관은 총 몇 회 진행하나요?",
+        a: `화상과 직무는 각각 <b>참관 3회</b>를 진행해야 해요.
+            <br><br>참관이 빠르게 필요한 경우 타조직 공고에도 참관 인터뷰어로 참여할 수 있어요.
+            <br>(해당 공고 담당 현업과 논의가 필요해요)`
+      },
+      {
+        q: "참관 3회 완료 후 정식 등록은 어떻게 되나요?",
+        a: `참관 3회가 모두 완료되면 채널로 정식 인터뷰어 등록 알럿이 자동으로 발송돼요.`
+      },
+    ],
+  },
+];
+
+// ============================================================
+//  렌더링
+// ============================================================
+function renderSections() {
+  const container = document.getElementById("sections");
+  container.innerHTML = SECTIONS.map((sec, si) => {
+    const itemsHTML = sec.items.map((item, qi) => `
+      <div class="qa-item" data-s="${si}" data-q="${qi}">
+        <div class="qa-question">
+          <span class="qa-q-icon">Q</span>
+          <span class="qa-q-text">${item.q}</span>
+          <span class="qa-chevron">▼</span>
+        </div>
+        <div class="qa-answer">
+          <div class="qa-answer-inner">${item.a}</div>
+        </div>
+      </div>
+    `).join("");
+
+    return `
+      <div class="section${si === 0 ? " open" : ""}" data-section="${si}">
+        <div class="section-header">
+          <div class="section-icon ${sec.iconColor}">${sec.icon}</div>
+          <div class="section-title">${sec.title}</div>
+          <div class="section-count">${sec.items.length}개</div>
+          <div class="section-chevron">▼</div>
+        </div>
+        <div class="section-body">
+          <div class="section-inner">${itemsHTML}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function bindEvents() {
+  // Section accordion
+  document.querySelectorAll(".section-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const section = header.parentElement;
+      section.classList.toggle("open");
+      updatePipeline();
+    });
+  });
+
+  // QA accordion
+  document.querySelectorAll(".qa-question").forEach(q => {
+    q.addEventListener("click", () => {
+      q.parentElement.classList.toggle("open");
+    });
+  });
+
+  // Pipeline clicks
+  document.querySelectorAll(".pipe-node").forEach(node => {
+    node.addEventListener("click", () => {
+      const idx = parseInt(node.dataset.section);
+      const section = document.querySelector(`.section[data-section="${idx}"]`);
+      if (section) {
+        // Open target, close others
+        document.querySelectorAll(".section").forEach(s => s.classList.remove("open"));
+        section.classList.add("open");
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+        updatePipeline();
+      }
+    });
+  });
+}
+
+function updatePipeline() {
+  const openIdx = [...document.querySelectorAll(".section.open")].map(s => parseInt(s.dataset.section));
+  document.querySelectorAll(".pipe-node").forEach(node => {
+    const idx = parseInt(node.dataset.section);
+    node.classList.toggle("active", openIdx.includes(idx));
+  });
+}
+
+renderSections();
+bindEvents();
+updatePipeline();
+</script>
+</body>
+</html>
